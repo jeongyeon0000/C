@@ -27,11 +27,11 @@ int main(void)
 				printf("%s 파일 저장 완료\n", name);
 			}
 			else
-				printf("실패\n");
+				printf("파일 열기 실패\n");
 		}
 		else if (k == 'r')
 		{
-			printf("%s 파일의 내용을 보기\n", name);
+			printf("%s 파일의 내용 보기\n", name);
 			err = fopen_s(&foc, name, "r");
 			if (err == 0)
 			{
@@ -41,7 +41,7 @@ int main(void)
 					putchar(ch);
 				}
 				fclose(foc);
-				printf("\n%s 파일 읽기 완료\n", name);
+				printf("\n%s 파일 보기 완료\n", name);
 			}
 			else
 			{
