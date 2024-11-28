@@ -4,80 +4,84 @@
 #define MAX_QUEUE_SIZE 5
 
 typedef int element;
-typedef struct ListNode {
-    element data;
-    struct ListNode* link;
-} ListNode;
+typedef struct {
+    int front;
+    int rear;
+    element data[MAX_QUEUE_SIZE];
+} QueueType;
 
-ListNode* insert_first(ListNode* head, element data) {
-    ListNode * node = (ListNode*)malloc(sizeof(ListNode));
-    node->data = data;
-    if (head == NULL) {
-        head = node;
-        node->link = head;
+// 오류 메시지를 출력하고 프로그램 종료
+void error(char* message) {
+    fprintf(stderr, "%s\n", message);
+    exit(1);
+}
+
+// 큐 초기화
+void init_queue(QueueType* q) {
+    q->rear = -1;
+    q->front = -1;
+}
+
+// 큐 상태 출력
+void queue_print(QueueType* q) {
+    for (int i = 0; i < MAX_QUEUE_SIZE; i++) {
+        if (i <= q->front || i > q->rear)
+            printf("|   ");
+        else
+            printf("| %d ", q->data[i]);
     }
-    else {
-        node->link = head->link;
-        head->link = node;
+    printf("|\n");
+}
+
+// 큐가 가득 찼는지 확인
+int is_full(QueueType* q) {
+    return q->rear == MAX_QUEUE_SIZE - 1;
+}
+
+// 큐가 비어 있는지 확인
+int is_empty(QueueType* q) {
+    return q->front == q->rear;
+}
+
+// 큐에 데이터 삽입
+void enqueue(QueueType* q, int item) {
+    if (is_full(q)) {
+        error("큐가 포화상태입니다.");
     }
-    return head;
+    q->data[++(q->rear)] = item;
 }
 
-ListNode* insert_last(ListNode* head, element data) {
-    ListNode* node = (ListNode*)malloc(sizeof(ListNode));
-    node->data = data;
-    if (head == NULL) {
-        head = node;
-        node->link = head;
+// 큐에서 데이터 제거
+int dequeue(QueueType* q) {
+    if (is_empty(q)) {
+        error("큐가 공백상태입니다.");
     }
-    return head;
-}
-
-ListNode* insert(ListNode* head, ListNode* pre, element value) {
-    ListNode* p = (ListNode*)malloc(sizeof(ListNode));
-    p->data = value;
-    p->link = pre->link;
-    pre->link = p;
-    return head;
-}
-
-ListNode* delete_first(ListNode* head) {
-    ListNode* removed;
-    if (head == NULL) return NULL;
-    removed = head;
-    head = removed->link;
-    free(removed);
-    return head;
-}
-
-ListNode* delete(ListNode* head, ListNode* pre) {
-    ListNode* removed;
-    removed = pre->link;
-    pre->link = removed->link;
-    free(removed);
-    return head;
-}
-
-void print_list(ListNode* head) {
-    ListNode* p = head;
-    while (p != NULL) {
-        printf("%d -> ", p->data);
-        p = p->link;
-    }
-    printf("NULL\n");
+    return q->data[++(q->front)];
 }
 
 int main() {
-    ListNode* head = NULL;
+    QueueType q;
+    init_queue(&q);
 
-    head = insert_first(head, 10);
-    head = insert_first(head, 20);
+    printf("초기 큐 상태:\n");
+    queue_print(&q);
 
-    print_list(head);
+    enqueue(&q, 10);
+    enqueue(&q, 20);
+    enqueue(&q, 30);
+    queue_print(&q);
 
+    int item = dequeue(&q);
+    queue_print(&q);
 
-    head = delete_first(head);
-    print_list(head);
+    enqueue(&q, 40);
+    enqueue(&q, 50);
+    queue_print(&q);
+
+    item = dequeue(&q);
+    queue_print(&q);
+
+    // enqueue(&q, 60) 오류 발생
 
     return 0;
 }
